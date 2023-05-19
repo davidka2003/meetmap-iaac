@@ -16,8 +16,7 @@ provider "aws" {
 
 
 module "vpc" {
-  source     = "./vpc"
-  app_prefix = local.app_prefix
+  source = "./vpc"
 }
 
 module "budget" {
