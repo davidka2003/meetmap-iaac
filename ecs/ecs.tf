@@ -190,7 +190,7 @@ resource "aws_lb_target_group" "tg" {
     protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 3
-    unhealthy_threshold = 3
+    unhealthy_threshold = 6
   }
 }
 
