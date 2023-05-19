@@ -1,146 +1,70 @@
-variable "app_prefix" {
-  type    = string
-  default = "meetmap-backend"
-}
-resource "aws_vpc" "main" {
+resource "aws_vpc" "meetmap-vpc" {
   cidr_block = "10.0.0.0/16"
-
   tags = {
-    Name = var.app_prefix
-  }
-}
-
-
-resource "aws_subnet" "public-eu-west-1a" {
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = "eu-west-1a"
-  vpc_id            = aws_vpc.main.id
-  tags = {
-    Name = "${var.app_prefix}-subnet-public-eu-west-1a"
-  }
-}
-
-resource "aws_subnet" "public-eu-west-1b" {
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "eu-west-1b"
-  vpc_id            = aws_vpc.main.id
-  tags = {
-    Name = "${var.app_prefix}-subnet-public-eu-west-1b"
-  }
-}
-
-
-resource "aws_subnet" "private-eu-west-1a" {
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "eu-west-1a"
-  vpc_id            = aws_vpc.main.id
-  tags = {
-    Name = "${var.app_prefix}-subnet-private-eu-west-1a"
-  }
-}
-
-resource "aws_subnet" "private-eu-west-1b" {
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = "eu-west-1b"
-  vpc_id            = aws_vpc.main.id
-  tags = {
-    Name = "${var.app_prefix}-subnet-private-eu-west-1b"
+    Name = "meetmap-vpc"
   }
 }
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.app_prefix}-internet-gateway"
-  }
+  vpc_id = aws_vpc.meetmap-vpc.id
 }
 
-resource "aws_eip" "nat-eu-west-1a" {
+resource "aws_eip" "nat_eip" {
   vpc = true
+}
 
+resource "aws_nat_gateway" "ngw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_subnet[0].id
+  depends_on    = [aws_internet_gateway.igw]
+}
+
+resource "aws_subnet" "public_subnet" {
+  count                   = 2
+  vpc_id                  = aws_vpc.meetmap-vpc.id
+  cidr_block              = "10.0.${count.index}.0/24"
+  availability_zone       = element(["eu-west-1a", "eu-west-1b"], count.index)
+  map_public_ip_on_launch = true
   tags = {
-    Name = "Elastic Ip for Nat gateway eu-west-1a"
+    Name = "Public Subnet ${count.index}"
   }
 }
 
-resource "aws_eip" "nat-eu-west-1b" {
-  vpc = true
-
+resource "aws_subnet" "private_subnet" {
+  count             = 2
+  vpc_id            = aws_vpc.meetmap-vpc.id
+  cidr_block        = "10.0.${count.index + 10}.0/24"
+  availability_zone = element(["eu-west-1a", "eu-west-1b"], count.index)
   tags = {
-    Name = "Elastic Ip for Nat gateway eu-west-1b"
+    Name = "Private Subnet ${count.index}"
   }
 }
 
-resource "aws_nat_gateway" "private-eu-west-1a" {
-  allocation_id = aws_eip.nat-eu-west-1a.id
-  subnet_id     = aws_subnet.private-eu-west-1a.id
-
-  tags = {
-    Name = "Nat gateway eu-west-1a"
-  }
-}
-
-resource "aws_nat_gateway" "private-eu-west-1b" {
-  allocation_id = aws_eip.nat-eu-west-1b.id
-  subnet_id     = aws_subnet.private-eu-west-1b.id
-
-  tags = {
-    Name = "Nat gateway eu-west-1b"
-  }
-}
-
-resource "aws_route" "private_nat_gateway-1a" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-
-  nat_gateway_id = aws_nat_gateway.private-eu-west-1a.id
-}
-
-resource "aws_route" "private_nat_gateway-1b" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-
-  nat_gateway_id = aws_nat_gateway.private-eu-west-1b.id
-}
-
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.meetmap-vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+}
 
-  tags = {
-    Name = "${var.app_prefix}-rtb-public"
+resource "aws_main_route_table_association" "public_route_table_association" {
+  vpc_id         = aws_vpc.meetmap-vpc.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table" "private_route_table" {
+  vpc_id = aws_vpc.meetmap-vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.ngw.id
   }
 }
 
-resource "aws_route_table_association" "public-eu-west-1a" {
-  subnet_id      = aws_subnet.public-eu-west-1a.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public-eu-west-1b" {
-  subnet_id      = aws_subnet.public-eu-west-1b.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.app_prefix}-rtb-private"
-  }
-}
-
-resource "aws_route_table_association" "private-eu-west-1a" {
-  subnet_id      = aws_subnet.private-eu-west-1a.id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "private-eu-west-1b" {
-  subnet_id      = aws_subnet.private-eu-west-1b.id
-  route_table_id = aws_route_table.private.id
+resource "aws_route_table_association" "private_route_table_association" {
+  count          = 2
+  subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
+  route_table_id = aws_route_table.private_route_table.id
 }
