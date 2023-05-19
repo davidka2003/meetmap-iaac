@@ -23,6 +23,9 @@ module "budget" {
   source = "./budget"
 }
 
+module "users" {
+  source = "./users"
+}
 
 
 # module "ecs"{
