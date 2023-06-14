@@ -17,7 +17,7 @@ resource "aws_route53_zone" "zone" {
 }
 
 resource "aws_route53_record" "example_record" {
-  for_each = { for arg in var.arguments : arg.name => arg }
+  for_each = { for arg in var.arguments : arg.alb_dns_name => arg }
   zone_id  = aws_route53_zone.zone.zone_id
   name     = var.domain_name # Update with your domain name
   type     = "A"
