@@ -21,6 +21,15 @@ variable "alb_subents" {
   type = list(string)
 }
 
+variable "is_https" {
+  type = bool
+}
+
+variable "certificate_arn" {
+  type        = string
+  description = "Certificate Arn for ALB"
+}
+
 locals {
   launch_type      = "FARGATE"
   application_name = "main-prod-cluster"
