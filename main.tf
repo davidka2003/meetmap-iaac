@@ -14,11 +14,6 @@ provider "aws" {
 
 }
 
-
-module "vpc" {
-  source = "./vpc"
-}
-
 module "budget" {
   source = "./budget"
 }
@@ -27,7 +22,3 @@ module "users" {
   source = "./users"
 }
 
-
-# module "ecs"{
-#     source = "./ecs"
-# }
