@@ -5,12 +5,26 @@ module "secrets" {
 module "vpc" {
   source = "./vpc"
 }
+
+module "domain" {
+  source          = "./domain"
+  domain_name     = local.backend_domain_name
+  wildcard_domain = local.wildcard_domain
+  arguments = [{
+    alb_dns_name           = module.ecs.alb_dns_name
+    alb_zone_id            = module.ecs.aws_alb.zone_id
+    evaluate_target_health = false
+  }]
+}
+
+
 //@todo rename to services
 module "ecs" {
-  source      = "./services"
-  vpc_id      = module.vpc.vpc_id
-  alb_subents = module.vpc.public_subents_id
-
+  source          = "./services"
+  vpc_id          = module.vpc.vpc_id
+  alb_subents     = module.vpc.public_subents_id
+  is_https        = true
+  certificate_arn = module.domain.certificate_arn
   arguments = [{
     containerPort   = 3001
     name            = "main-app"
@@ -315,12 +329,3 @@ module "ecs" {
   ]
 }
 
-module "domain" {
-  source      = "./domain"
-  domain_name = "api.meetmap.xyz"
-  arguments = [{
-    alb_dns_name           = module.ecs.alb_dns_name
-    alb_zone_id            = module.ecs.aws_alb.zone_id
-    evaluate_target_health = false
-  }]
-}
