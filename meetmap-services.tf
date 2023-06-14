@@ -1,22 +1,23 @@
 module "secrets" {
-  source = "../secrets"
+  source = "./secrets"
+}
+
+module "vpc" {
+  source = "./vpc"
 }
 
 module "ecs" {
-  # depends_on = [secrets]
-  source      = "../ecs"
-  vpc_id      = aws_vpc.meetmap-vpc.id
-  alb_subents = aws_subnet.public_subnet[*].id
-  # security_groups = [aws_security_group.public_sg.id]
-  # subnets         = [aws_subnet.public-eu-west-1a.id, aws_subnet.public-eu-west-1b.id]
+  source      = "./services"
+  vpc_id      = module.vpc.vpc_id
+  alb_subents = module.vpc.public_subents_id
+
   arguments = [{
     containerPort   = 3001
     name            = "main-app"
     replicas        = 1
-    security_groups = [aws_security_group.private_sg.id]
-    subnets         = aws_subnet.private_subnet[*].id
+    security_groups = [module.vpc.private_sg_id]
+    subnets         = module.vpc.private_subents_id
     publicIp        = true
-    env_vars        = []
     env_vars = [
       {
         name  = "RABBIT_MQ_URL"
@@ -84,8 +85,8 @@ module "ecs" {
       containerPort   = 3000
       name            = "events-fetcher"
       replicas        = 1
-      security_groups = [aws_security_group.private_sg.id]
-      subnets         = aws_subnet.private_subnet[*].id
+      security_groups = [module.vpc.private_sg_id]
+      subnets         = module.vpc.private_subents_id
       publicIp        = false
       env_vars = [
         {
@@ -154,8 +155,8 @@ module "ecs" {
       containerPort   = 3002
       name            = "location-service"
       replicas        = 1
-      security_groups = [aws_security_group.private_sg.id]
-      subnets         = aws_subnet.private_subnet[*].id
+      security_groups = [module.vpc.private_sg_id]
+      subnets         = module.vpc.private_subents_id
       publicIp        = false
       env_vars = [
         {
@@ -228,8 +229,8 @@ module "ecs" {
       containerPort   = 3003
       name            = "auth-service"
       replicas        = 1
-      security_groups = [aws_security_group.private_sg.id]
-      subnets         = aws_subnet.private_subnet[*].id
+      security_groups = [module.vpc.private_sg_id]
+      subnets         = module.vpc.private_subents_id
       publicIp        = false
       env_vars = [
         {
@@ -296,4 +297,3 @@ module "ecs" {
     },
   ]
 }
-
