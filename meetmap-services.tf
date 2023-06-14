@@ -5,7 +5,7 @@ module "secrets" {
 module "vpc" {
   source = "./vpc"
 }
-
+//@todo rename to services
 module "ecs" {
   source      = "./services"
   vpc_id      = module.vpc.vpc_id
@@ -148,6 +148,23 @@ module "ecs" {
         {
           name  = "JWT_RT_EXPIRES"
           value = module.secrets.secrets.JWT_RT_EXPIRES
+        },
+
+        {
+          name  = "DASHBOARD_JWT_AT_SECRET"
+          value = module.secrets.secrets.DASHBOARD_JWT_AT_SECRET
+        },
+        {
+          name  = "DASHBOARD_JWT_RT_SECRET"
+          value = module.secrets.secrets.DASHBOARD_JWT_RT_SECRET
+        },
+        {
+          name  = "DASHBOARD_JWT_AT_EXPIRES"
+          value = module.secrets.secrets.DASHBOARD_JWT_AT_EXPIRES
+        },
+        {
+          name  = "DASHBOARD_JWT_RT_EXPIRES"
+          value = module.secrets.secrets.DASHBOARD_JWT_RT_EXPIRES
         },
       ]
     },
@@ -296,4 +313,14 @@ module "ecs" {
       ]
     },
   ]
+}
+
+module "domain" {
+  source      = "./domain"
+  domain_name = "api.meetmap.xyz"
+  arguments = [{
+    alb_dns_name           = module.ecs.alb_dns_name
+    alb_zone_id            = module.ecs.aws_alb.zone_id
+    evaluate_target_health = false
+  }]
 }
