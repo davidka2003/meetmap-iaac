@@ -324,6 +324,14 @@ module "ecs" {
           name  = "JWT_RT_EXPIRES"
           value = module.secrets.secrets.JWT_RT_EXPIRES
         },
+        {
+          name  = "FB_CLIENT_ID"
+          value = module.secrets.secrets.FB_CLIENT_ID
+        },
+        {
+          name  = "FB_CLIENT_SECRET"
+          value = module.secrets.secrets.FB_CLIENT_SECRET
+        },
       ]
     },
   ]
