@@ -27,34 +27,19 @@ module "ecs" {
   certificate_arn = module.domain.certificate_arn
   arguments = [{
     containerPort   = 3001
-    name            = "main-app"
+    name            = "users-service"
     replicas        = 1
     security_groups = [module.vpc.private_sg_id]
     subnets         = module.vpc.private_subents_id
     publicIp        = true
+    prefix          = "users"
     env_vars = [
       {
         name  = "RABBIT_MQ_URL"
         value = module.secrets.secrets.RABBIT_MQ_URL
       },
       {
-        name  = "EVENTS_FETCHER_API_URL"
-        value = module.secrets.secrets.EVENTS_FETCHER_API_URL
-      },
-      {
-        name  = "MAIN_APP_API_URL"
-        value = module.secrets.secrets.MAIN_APP_API_URL
-      },
-      {
-        name  = "LOCATION_SERVICE_API_URL"
-        value = module.secrets.secrets.LOCATION_SERVICE_API_URL
-      },
-      {
-        name  = "EVENTS_FETCHER_DATABASE_URL"
-        value = module.secrets.secrets.EVENTS_FETCHER_DATABASE_URL
-      },
-      {
-        name  = "MAIN_APP_DATABASE_URL"
+        name  = "USERS_SERVICE_DATABASE_URL"
         value = module.secrets.secrets.MAIN_APP_DATABASE_URL
       },
       {
@@ -97,7 +82,8 @@ module "ecs" {
     },
     {
       containerPort   = 3000
-      name            = "events-fetcher"
+      name            = "events-service"
+      prefix          = "events"
       replicas        = 1
       security_groups = [module.vpc.private_sg_id]
       subnets         = module.vpc.private_subents_id
@@ -108,24 +94,8 @@ module "ecs" {
           value = module.secrets.secrets.RABBIT_MQ_URL
         },
         {
-          name  = "EVENTS_FETCHER_API_URL"
-          value = module.secrets.secrets.EVENTS_FETCHER_API_URL
-        },
-        {
-          name  = "MAIN_APP_API_URL"
-          value = module.secrets.secrets.MAIN_APP_API_URL
-        },
-        {
-          name  = "LOCATION_SERVICE_API_URL"
-          value = module.secrets.secrets.LOCATION_SERVICE_API_URL
-        },
-        {
-          name  = "EVENTS_FETCHER_DATABASE_URL"
+          name  = "EVENTS_SERVICE_DATABASE_URL"
           value = module.secrets.secrets.EVENTS_FETCHER_DATABASE_URL
-        },
-        {
-          name  = "MAIN_APP_DATABASE_URL"
-          value = module.secrets.secrets.MAIN_APP_DATABASE_URL
         },
         {
           name  = "AWS_ACCESS_KEY_ID"
@@ -185,6 +155,7 @@ module "ecs" {
     {
       containerPort   = 3002
       name            = "location-service"
+      prefix          = "location"
       replicas        = 1
       security_groups = [module.vpc.private_sg_id]
       subnets         = module.vpc.private_subents_id
@@ -195,28 +166,8 @@ module "ecs" {
           value = module.secrets.secrets.RABBIT_MQ_URL
         },
         {
-          name  = "EVENTS_FETCHER_API_URL"
-          value = module.secrets.secrets.EVENTS_FETCHER_API_URL
-        },
-        {
-          name  = "MAIN_APP_API_URL"
-          value = module.secrets.secrets.MAIN_APP_API_URL
-        },
-        {
-          name  = "LOCATION_SERVICE_API_URL"
-          value = module.secrets.secrets.LOCATION_SERVICE_API_URL
-        },
-        {
           name  = "LOCATION_SERVICE_DATABASE_URL"
           value = module.secrets.secrets.LOCATION_SERVICE_DATABASE_URL
-        },
-        {
-          name  = "EVENTS_FETCHER_DATABASE_URL"
-          value = module.secrets.secrets.EVENTS_FETCHER_DATABASE_URL
-        },
-        {
-          name  = "MAIN_APP_DATABASE_URL"
-          value = module.secrets.secrets.MAIN_APP_DATABASE_URL
         },
         {
           name  = "AWS_ACCESS_KEY_ID"
@@ -259,6 +210,7 @@ module "ecs" {
     {
       containerPort   = 3003
       name            = "auth-service"
+      prefix          = "auth"
       replicas        = 1
       security_groups = [module.vpc.private_sg_id]
       subnets         = module.vpc.private_subents_id
@@ -269,24 +221,8 @@ module "ecs" {
           value = module.secrets.secrets.RABBIT_MQ_URL
         },
         {
-          name  = "EVENTS_FETCHER_API_URL"
-          value = module.secrets.secrets.EVENTS_FETCHER_API_URL
-        },
-        {
-          name  = "MAIN_APP_API_URL"
-          value = module.secrets.secrets.MAIN_APP_API_URL
-        },
-        {
-          name  = "LOCATION_SERVICE_API_URL"
-          value = module.secrets.secrets.LOCATION_SERVICE_API_URL
-        },
-        {
           name  = "AUTH_SERVICE_DATABASE_URL"
           value = module.secrets.secrets.AUTH_SERVICE_DATABASE_URL
-        },
-        {
-          name  = "MAIN_APP_DATABASE_URL"
-          value = module.secrets.secrets.MAIN_APP_DATABASE_URL
         },
         {
           name  = "AWS_ACCESS_KEY_ID"

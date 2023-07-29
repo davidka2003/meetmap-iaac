@@ -78,7 +78,7 @@ resource "aws_lb_target_group" "tg" {
   health_check {
     enabled             = true
     interval            = 30
-    path                = "/${each.value.name}" # change it to /health later
+    path                = "/${each.value.prefix}" # change it to /health later
     protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 3
@@ -99,7 +99,7 @@ resource "aws_lb_listener_rule" "lb_rule" {
 
   condition {
     path_pattern {
-      values = ["/${each.value.name}*"]
+      values = ["/${each.value.prefix}*"]
     }
   }
 }
