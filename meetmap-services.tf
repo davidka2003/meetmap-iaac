@@ -270,6 +270,70 @@ module "ecs" {
         },
       ]
     },
+    {
+      containerPort   = 3004
+      name            = "assets-service"
+      prefix          = "assets"
+      replicas        = 1
+      security_groups = [module.vpc.private_sg_id]
+      subnets         = module.vpc.private_subents_id
+      publicIp        = false
+      env_vars = [
+        {
+          name  = "RABBIT_MQ_URL"
+          value = module.secrets.secrets.RABBIT_MQ_URL
+        },
+        {
+          name  = "AUTH_SERVICE_DATABASE_URL"
+          value = module.secrets.secrets.AUTH_SERVICE_DATABASE_URL
+        },
+        {
+          name  = "AWS_ACCESS_KEY_ID"
+          value = module.secrets.secrets.AWS_ACCESS_KEY_ID
+        },
+        {
+          name  = "AWS_SECRET_ACCESS_KEY"
+          value = module.secrets.secrets.AWS_SECRET_ACCESS_KEY
+        },
+        {
+          name  = "AWS_REGION"
+          value = module.secrets.secrets.AWS_REGION
+        },
+        {
+          name  = "AWS_S3_ASSESTS_BUCKET"
+          value = module.secrets.secrets.AWS_S3_ASSESTS_BUCKET
+        },
+        {
+          name  = "CACHE_ENDPOINT"
+          value = module.secrets.secrets.CACHE_ENDPOINT
+        },
+        {
+          name  = "JWT_AT_SECRET"
+          value = module.secrets.secrets.JWT_AT_SECRET
+        },
+        {
+          name  = "JWT_RT_SECRET"
+          value = module.secrets.secrets.JWT_RT_SECRET
+        },
+        {
+          name  = "JWT_AT_EXPIRES"
+          value = module.secrets.secrets.JWT_AT_EXPIRES
+        },
+        {
+          name  = "JWT_RT_EXPIRES"
+          value = module.secrets.secrets.JWT_RT_EXPIRES
+        },
+        {
+          name  = "FB_CLIENT_ID"
+          value = module.secrets.secrets.FB_CLIENT_ID
+        },
+        {
+          name  = "FB_CLIENT_SECRET"
+          value = module.secrets.secrets.FB_CLIENT_SECRET
+        },
+      ]
+    },
+
   ]
 }
 
