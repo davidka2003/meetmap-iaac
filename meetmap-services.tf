@@ -284,8 +284,8 @@ module "ecs" {
           value = module.secrets.secrets.RABBIT_MQ_URL
         },
         {
-          name  = "AUTH_SERVICE_DATABASE_URL"
-          value = module.secrets.secrets.AUTH_SERVICE_DATABASE_URL
+          name  = "ASSETS_SERVICE_DATABASE_URL"
+          value = module.secrets.secrets.ASSETS_SERVICE_DATABASE_URL
         },
         {
           name  = "AWS_ACCESS_KEY_ID"
