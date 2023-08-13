@@ -94,6 +94,10 @@ module "ecs" {
           value = module.secrets.secrets.RABBIT_MQ_URL
         },
         {
+          name  = "OPENAI_API_KEY"
+          value = module.secrets.secrets.OPENAI_API_KEY
+        },
+        {
           name  = "EVENTS_SERVICE_DATABASE_URL"
           value = module.secrets.secrets.EVENTS_FETCHER_DATABASE_URL
         },
@@ -331,6 +335,37 @@ module "ecs" {
           name  = "FB_CLIENT_SECRET"
           value = module.secrets.secrets.FB_CLIENT_SECRET
         },
+      ]
+    },
+    {
+      containerPort   = 3005
+      name            = "jobs-service"
+      prefix          = "jobs"
+      replicas        = 1
+      security_groups = [module.vpc.private_sg_id]
+      subnets         = module.vpc.private_subents_id
+      publicIp        = false
+      env_vars = [
+        {
+          name  = "RABBIT_MQ_URL"
+          value = module.secrets.secrets.RABBIT_MQ_URL
+        },
+        {
+          name  = "JWT_AT_SECRET"
+          value = module.secrets.secrets.JWT_AT_SECRET
+        },
+        {
+          name  = "JWT_RT_SECRET"
+          value = module.secrets.secrets.JWT_RT_SECRET
+        },
+        {
+          name  = "JWT_AT_EXPIRES"
+          value = module.secrets.secrets.JWT_AT_EXPIRES
+        },
+        {
+          name  = "JWT_RT_EXPIRES"
+          value = module.secrets.secrets.JWT_RT_EXPIRES
+        }
       ]
     },
 
