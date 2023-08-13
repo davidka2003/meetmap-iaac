@@ -1,5 +1,6 @@
 variable "arguments" {
   type = list(object({
+    prefix          = string
     name            = string
     subnets         = list(string)
     security_groups = list(string)
