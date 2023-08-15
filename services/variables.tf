@@ -1,12 +1,12 @@
 variable "arguments" {
   type = list(object({
-    prefix          = string
-    name            = string
-    subnets         = list(string)
-    security_groups = list(string)
-    replicas        = number
-    containerPort   = number
-    publicIp        = bool
+    prefix  = string
+    name    = string
+    subnets = list(string)
+    # security_groups = list(string)
+    replicas      = number
+    containerPort = number
+    publicIp      = bool
     env_vars = list(object({
       name  = string
       value = string

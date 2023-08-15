@@ -11,10 +11,32 @@ module "domain" {
   domain_name     = local.backend_domain_name
   wildcard_domain = local.wildcard_domain
   arguments = [{
-    alb_dns_name           = module.ecs.alb_dns_name
-    alb_zone_id            = module.ecs.aws_alb.zone_id
+    dns_name               = module.ecs.alb_dns_name
+    zone_id                = module.ecs.aws_alb.zone_id
     evaluate_target_health = false
   }]
+}
+
+module "vpn" {
+  source          = "./vpn"
+  vpn_domain_name = local.vpn_domain_name
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subents_id
+  vpc_cidr        = module.vpc.vpc_cidr
+}
+
+module "opensearch" {
+  source                        = "./opensearch"
+  domain                        = "meetmap-app-opensearch"
+  ebs_volume_size               = 10
+  engine_version                = "2.7"
+  instance_count                = 2
+  instance_type                 = "t3.small.search"
+  custom_domain                 = local.opensearch_domain_name
+  custom_domain_certificate_arn = module.domain.certificate_arn
+  subnet_ids                    = module.vpc.private_subents_id
+  vpc_id                        = module.vpc.vpc_id
+  depends_on                    = [module.ecs]
 }
 
 
@@ -26,13 +48,13 @@ module "ecs" {
   is_https        = true
   certificate_arn = module.domain.certificate_arn
   arguments = [{
-    containerPort   = 3001
-    name            = "users-service"
-    replicas        = 1
-    security_groups = [module.vpc.private_sg_id]
-    subnets         = module.vpc.private_subents_id
-    publicIp        = true
-    prefix          = "users"
+    containerPort = 3001
+    name          = "users-service"
+    replicas      = 1
+    # security_groups = [module.vpc.private_sg_id]
+    subnets  = module.vpc.private_subents_id
+    publicIp = true
+    prefix   = "users"
     env_vars = [
       {
         name  = "RABBIT_MQ_URL"
@@ -81,14 +103,18 @@ module "ecs" {
     ]
     },
     {
-      containerPort   = 3000
-      name            = "events-service"
-      prefix          = "events"
-      replicas        = 1
-      security_groups = [module.vpc.private_sg_id]
-      subnets         = module.vpc.private_subents_id
-      publicIp        = false
+      containerPort = 3000
+      name          = "events-service"
+      prefix        = "events"
+      replicas      = 1
+      # security_groups = [module.vpc.private_sg_id]
+      subnets  = module.vpc.private_subents_id
+      publicIp = false
       env_vars = [
+        {
+          name  = "SEARCH_CLIENT_URL"
+          value = module.secrets.secrets.SEARCH_CLIENT_URL
+        },
         {
           name  = "RABBIT_MQ_URL"
           value = module.secrets.secrets.RABBIT_MQ_URL
@@ -157,13 +183,13 @@ module "ecs" {
       ]
     },
     {
-      containerPort   = 3002
-      name            = "location-service"
-      prefix          = "location"
-      replicas        = 1
-      security_groups = [module.vpc.private_sg_id]
-      subnets         = module.vpc.private_subents_id
-      publicIp        = false
+      containerPort = 3002
+      name          = "location-service"
+      prefix        = "location"
+      replicas      = 1
+      # security_groups = [module.vpc.private_sg_id]
+      subnets  = module.vpc.private_subents_id
+      publicIp = false
       env_vars = [
         {
           name  = "RABBIT_MQ_URL"
@@ -212,13 +238,13 @@ module "ecs" {
       ]
     },
     {
-      containerPort   = 3003
-      name            = "auth-service"
-      prefix          = "auth"
-      replicas        = 1
-      security_groups = [module.vpc.private_sg_id]
-      subnets         = module.vpc.private_subents_id
-      publicIp        = false
+      containerPort = 3003
+      name          = "auth-service"
+      prefix        = "auth"
+      replicas      = 1
+      # security_groups = [module.vpc.private_sg_id]
+      subnets  = module.vpc.private_subents_id
+      publicIp = false
       env_vars = [
         {
           name  = "RABBIT_MQ_URL"
@@ -275,13 +301,13 @@ module "ecs" {
       ]
     },
     {
-      containerPort   = 3004
-      name            = "assets-service"
-      prefix          = "assets"
-      replicas        = 1
-      security_groups = [module.vpc.private_sg_id]
-      subnets         = module.vpc.private_subents_id
-      publicIp        = false
+      containerPort = 3004
+      name          = "assets-service"
+      prefix        = "assets"
+      replicas      = 1
+      # security_groups = [module.vpc.private_sg_id]
+      subnets  = module.vpc.private_subents_id
+      publicIp = false
       env_vars = [
         {
           name  = "RABBIT_MQ_URL"
@@ -338,13 +364,13 @@ module "ecs" {
       ]
     },
     {
-      containerPort   = 3005
-      name            = "jobs-service"
-      prefix          = "jobs"
-      replicas        = 1
-      security_groups = [module.vpc.private_sg_id]
-      subnets         = module.vpc.private_subents_id
-      publicIp        = false
+      containerPort = 3005
+      name          = "jobs-service"
+      prefix        = "jobs"
+      replicas      = 1
+      # security_groups = [module.vpc.private_sg_id]
+      subnets  = module.vpc.private_subents_id
+      publicIp = false
       env_vars = [
         {
           name  = "RABBIT_MQ_URL"

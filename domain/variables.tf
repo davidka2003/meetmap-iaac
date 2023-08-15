@@ -1,7 +1,7 @@
 variable "arguments" {
   type = list(object({
-    alb_dns_name           = string
-    alb_zone_id            = string
+    dns_name               = string
+    zone_id                = string
     evaluate_target_health = bool
   }))
 }
