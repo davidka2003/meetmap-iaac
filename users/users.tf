@@ -13,6 +13,11 @@ resource "aws_iam_group_policy_attachment" "developer-ecs" {
   policy_arn = aws_iam_policy.allow-update-ecs-deployment.arn
 }
 
+resource "aws_iam_group_policy_attachment" "developer-opensearch" {
+  group      = aws_iam_group.developer.name
+  policy_arn = aws_iam_policy.allow-update-ecs-deployment.arn
+}
+
 resource "aws_iam_policy" "allow-pull-push-ecr" {
   name        = "pull-push-ecr"
   description = "Allow pull and push to ecr for developers"
@@ -59,3 +64,22 @@ resource "aws_iam_policy" "allow-update-ecs-deployment" {
 }
   EOF
 }
+//@todo fix it later, restrict access !!important
+# resource "aws_iam_policy" "allow-full-access-opensearch" {
+#   name        = "allow-full-access-opensearch"
+#   description = "Allow full access to all opensearches"
+#   policy      = <<EOF
+# {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#         {
+#             "Sid": "VisualEditor0",
+#             "Effect": "Allow",
+
+#             "Resource": "*"
+#         }
+#     ]
+# }
+#   EOF
+# }
+

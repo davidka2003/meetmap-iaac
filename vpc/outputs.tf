@@ -13,12 +13,16 @@ output "private_subents_id" {
   value       = aws_subnet.private_subnet[*].id
 }
 
-output "public_sg_id" {
-  description = "Public security group id"
-  value       = aws_security_group.public_sg.id
+output "vpc_cidr" {
+  value = aws_vpc.meetmap-vpc.cidr_block
 }
 
-output "private_sg_id" {
-  description = "Private security group id"
-  value       = aws_security_group.private_sg.id
-}
+# output "public_sg_id" {
+#   description = "Public security group id"
+#   value       = aws_security_group.public_sg.id
+# }
+
+# output "private_sg_id" {
+#   description = "Private security group id"
+#   value       = aws_security_group.private_sg.id
+# }
