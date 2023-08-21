@@ -112,6 +112,10 @@ module "ecs" {
       publicIp = false
       env_vars = [
         {
+          name  = "GOOGLE_MAPS_API_KEY"
+          value = module.secrets.secrets.GOOGLE_MAPS_API_KEY
+        },
+        {
           name  = "SEARCH_CLIENT_URL"
           value = module.secrets.secrets.SEARCH_CLIENT_URL
         },

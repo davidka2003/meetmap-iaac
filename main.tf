@@ -4,15 +4,18 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.67"
     }
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.67"
+    }
   }
 }
 
-
-provider "aws" {
-  profile = "d4v1ds0n"
-  region  = "eu-west-1"
-
-}
+# module "maps" {
+#   source            = "./maps"
+#   gcp_project_id    = var.gcp_project_id
+#   maps_api_key_name = "meetmap-maps-backend-api-key"
+# }
 
 module "budget" {
   source = "./budget"
