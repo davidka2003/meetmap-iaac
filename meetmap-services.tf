@@ -107,6 +107,8 @@ module "ecs" {
       name          = "events-service"
       prefix        = "events"
       replicas      = 1
+      cpu           = "1024"
+      memory        = "2048"
       # security_groups = [module.vpc.private_sg_id]
       subnets  = module.vpc.private_subents_id
       publicIp = false

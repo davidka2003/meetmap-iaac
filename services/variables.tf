@@ -7,6 +7,10 @@ variable "arguments" {
     replicas      = number
     containerPort = number
     publicIp      = bool
+
+    cpu    = optional(string, "256")
+    memory = optional(string, "512")
+
     env_vars = list(object({
       name  = string
       value = string
