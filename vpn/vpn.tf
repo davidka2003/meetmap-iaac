@@ -37,7 +37,7 @@ resource "aws_ec2_client_vpn_endpoint" "public" {
 }
 
 resource "aws_ec2_client_vpn_network_association" "public" {
-  for_each               = { for arg in var.subnet_ids : arg => arg }
+  for_each               = { for i, arg in var.subnet_ids : tostring(i) => arg }
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.public.id
   subnet_id              = each.value # Make sure to declare this variable or replace with actual subnet ID
 }
