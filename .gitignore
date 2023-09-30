@@ -2,4 +2,5 @@
 .terraform
 *.pem
 pki
-# .json
+*.json
+*.tfvars
